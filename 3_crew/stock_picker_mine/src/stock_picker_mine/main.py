@@ -4,22 +4,21 @@ import warnings
 import os
 from datetime import datetime
 
-from stock_picker.crew import StockPicker
+from stock_picker_mine.crew import StockPickerMine
 
 warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
 
-assignment = "write a python script to calculate the first 10,000 terms of this series, multiplying the total by 4: 1 - 1 / 3 + 1 / 5 - 1 / 7 + ..."
 
 def run():
     """
     Run the research crew.
     """
     inputs = {
-        'assignment': assignment
+        'sector': 'Technology'
     }
 
     # Create and run the crew
-    result = StockPicker().crew().kickoff(inputs=inputs)
+    result = StockPickerMine().crew().kickoff(inputs=inputs)
 
     # Print the result
     print("\n\n=== FINAL DECISION ===\n\n")

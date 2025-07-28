@@ -1,12 +1,9 @@
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
 from crewai_tools import SerperDevTool
-from pydantic import BaseModel, Field
+from pydantic import Field, BaseModel
 from typing import List
 from .tools.push_tool import PushNotificationTool
-from crewai.memory import LongTermMemory, ShortTermMemory, EntityMemory
-from crewai.memory.storage.rag_storage import RAGStorage
-from crewai.memory.storage.ltm_sqlite_storage import LTMSQLiteStorage
 from crewai.agents.agent_builder.base_agent import BaseAgent
 
 class TrendingCompany(BaseModel):
@@ -30,44 +27,51 @@ class TrendingCompanyResearchList(BaseModel):
     """ A list of detailed research on all the companies """
     research_list: List[TrendingCompanyResearch] = Field(description="Comprehensive research on all trending companies")
 
-
 @CrewBase
-class StockPicker():
-    """StockPicker crew"""
+class StockPickerMine():
+    """StockPickerMine crew"""
 
     agents = List[BaseAgent]
     tasks = List[Task]
 
     @agent
     def trending_company_finder(self) -> Agent:
-        return Agent(config=self.agents_config['trending_company_finder'], tools=[SerperDevTool()], memory=True)
+        return Agent(
+            config=self.agents_config['trending_company_finder'],
+            tools=[SerperDevTool()]
+        )
     
     @agent
     def financial_researcher(self) -> Agent:
-        return Agent(config=self.agents_config['financial_researcher'], tools=[SerperDevTool()])
+        return Agent(
+            config=self.agents_config['financial_researcher'],
+            tools=[SerperDevTool()]
+        )
 
     @agent
     def stock_picker(self) -> Agent:
-        return Agent(config=self.agents_config['stock_picker'], tools=[PushNotificationTool()], memory=True)
+        return Agent(
+            config=self.agents_config['stock_picker'],                      tools=[PushNotificationTool()]
+        )
     
     @task
     def find_trending_companies(self) -> Task:
         return Task(
             config=self.tasks_config['find_trending_companies'],
-            output_pydantic=TrendingCompanyList,
+            output_pydantic=TrendingCompanyList
         )
 
     @task
     def research_trending_companies(self) -> Task:
         return Task(
             config=self.tasks_config['research_trending_companies'],
-            output_pydantic=TrendingCompanyResearchList,
+            output_pydantic=TrendingCompanyResearchList
         )
 
     @task
     def pick_best_company(self) -> Task:
         return Task(
-            config=self.tasks_config['pick_best_company'],
+            config=self.tasks_config['pick_best_company']
         )
     
 
@@ -87,37 +91,5 @@ class StockPicker():
             tasks=self.tasks, 
             process=Process.hierarchical,
             verbose=True,
-            manager_agent=manager,
-            memory=True,
-            # Long-term memory for persistent storage across sessions
-            long_term_memory = LongTermMemory(
-                storage=LTMSQLiteStorage(
-                    db_path="./memory/long_term_memory_storage.db"
-                )
-            ),
-            # Short-term memory for current context using RAG
-            short_term_memory = ShortTermMemory(
-                storage = RAGStorage(
-                    embedder_config={
-                        "provider": "openai",
-                        "config": {
-                            "model": 'text-embedding-3-small'
-                        }
-                    },
-                    type="short_term",
-                    path="./memory/"
-                )
-            ),            # Entity memory for tracking key information about entities
-            entity_memory = EntityMemory(
-                storage=RAGStorage(
-                    embedder_config={
-                        "provider": "openai",
-                        "config": {
-                            "model": 'text-embedding-3-small'
-                        }
-                    },
-                    type="short_term",
-                    path="./memory/"
-                )
-            ),
+            manager_agent=manager
         )
