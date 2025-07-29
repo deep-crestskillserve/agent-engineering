@@ -32,7 +32,7 @@ class DataLoader:
 
         papers = search_arxiv(query)
 
-        if len(papers) < 5 and self.search_agent:  # If fewer than 5 papers, expand search
+        if len(papers) < 5 and self.search_agent:  
             related_topics_response = self.search_agent.generate_reply(
                 messages=[{"role": "user", "content": f"Suggest 3 related research topics for '{query}'"}]
             )
@@ -43,7 +43,7 @@ class DataLoader:
                 if topic and len(papers) < 5:
                     new_papers = search_arxiv(topic)
                     papers.extend(new_papers)
-                    papers = papers[:5]  # Ensure max 5 papers
+                    papers = papers[:5]  
 
         return papers
 

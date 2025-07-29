@@ -9,63 +9,47 @@ load_dotenv(override=True)
 print("ok")
 my_name = "Deep Dabhi"
 linked_profile = "https://in.linkedin.com/in/deep-dabhi-aa9993223"
-my_book_details_link = "https://www.amazon.in/Generative-360%C2%B0-Productivity-Professionals-Entrepreneurs/dp/B0F6Y7K41F"
-my_book_image_url = "https://m.media-amazon.com/images/I/71wd8CxVCNL._AC_UY218_.jpg"
-
-# Sidebar with my details
 with st.sidebar:
     st.markdown(f"**{my_name}**")
     st.markdown(f"[LinkedIn]({linked_profile})")
-    st.markdown(f"[📖 Check out my book!]({my_book_details_link})")
 
-# Streamlit App UI
 st.title("AI-powered Research Assistant 📑")
 
 
-# Description of the app
 st.markdown("""
 This app helps researchers, students, and professionals quickly find and summarize research papers.
 
 Simply enter a research query, and the app will fetch relevant papers from ArXiv and Google Scholar, providing concise summaries and insightful analyses.
 """)
 
-# Retrieve the API key from environment variables
 groq_api_key = os.getenv('GROQ_API_KEY')
 
-# Check if API key is set, else stop execution
 if not groq_api_key:
     st.error("GROQ_API_KEY is missing. Please set it in your environment variables.")
     st.stop()
 
-# Initialize AI Agents for summarization and analysis
 agents = ResearchAgents(groq_api_key)
 
-# Initialize DataLoader for fetching research papers
 data_loader = DataLoader()
 
-# Input field for the user to enter a research topic
 query = st.text_input("Enter a research topic:")
 
-# When the user clicks "Search"
 if st.button("Search"):
-    with st.spinner("Fetching research papers..."):  # Show a loading spinner
+    with st.spinner("Fetching research papers..."): 
 
-        # Fetch research papers from ArXiv and Google Scholar
+        # Fetch research papers from ArXiv 
         arxiv_papers = data_loader.fetch_arxiv_papers(query)
-        #google_scholar_papers = data_loader.fetch_google_scholar_papers(query)
-        #all_papers = arxiv_papers + google_scholar_papers  # Combine results from both sources
         all_papers = arxiv_papers
 
-        # If no papers are found, display an error message
         if not all_papers:
             st.error("Failed to fetch papers. Try again!")
         else:
             processed_papers = []
 
-            # Process each paper: generate summary and analyze advantages/disadvantages
+            
             for paper in all_papers:
-                summary = agents.summarize_paper(paper['summary'])  # Generate summary
-                adv_dis = agents.analyze_advantages_disadvantages(summary)  # Analyze pros/cons
+                summary = agents.summarize_paper(paper['summary'])  
+                adv_dis = agents.analyze_advantages_disadvantages(summary)  
 
                 processed_papers.append({
                     "title": paper["title"],
@@ -74,11 +58,10 @@ if st.button("Search"):
                     "advantages_disadvantages": adv_dis,
                 })
 
-            # Display the processed research papers
             st.subheader("Top Research Papers for the topic:")
             for i, paper in enumerate(processed_papers, 1):
-                st.markdown(f"### {i}. {paper['title']}")  # Paper title
-                st.markdown(f"🔗 [Read Paper]({paper['link']})")  # Paper link
-                st.write(f"**Summary:** {paper['summary']}")  # Paper summary
-                st.write(f"{paper['advantages_disadvantages']}")  # Pros/cons analysis
-                st.markdown("---")  # Separator between papers
+                st.markdown(f"### {i}. {paper['title']}")  
+                st.markdown(f"🔗 [Read Paper]({paper['link']})")  
+                st.write(f"**Summary:** {paper['summary']}") 
+                st.write(f"{paper['advantages_disadvantages']}")  
+                st.markdown("---")  

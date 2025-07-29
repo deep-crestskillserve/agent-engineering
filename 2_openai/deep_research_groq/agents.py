@@ -10,7 +10,6 @@ class ResearchAgents:
         self.groq_api_key = api_key
         self.llm_config = {'config_list': [{'model': 'llama-3.3-70b-versatile', 'api_key': '', 'api_type': "groq"}]}
 
-        # Summarizer Agent - Summarizes research papers
         self.summarizer_agent = AssistantAgent(
             name="summarizer_agent",
             system_message="Summarize the retrieved research papers and present concise summaries to the user, JUST GIVE THE RELEVANT SUMMARIES OF THE RESEARCH PAPER AND NOT YOUR THOUGHT PROCESS.",
@@ -19,7 +18,6 @@ class ResearchAgents:
             code_execution_config=False
         )
 
-        # Advantages and Disadvantages Agent - Analyzes pros and cons
         self.advantages_disadvantages_agent = AssistantAgent(
             name="advantages_disadvantages_agent",
             system_message="Analyze the summaries of the research papers and provide a list of advantages and disadvantages for each paper in a pointwise format. JUST GIVE THE ADVANTAGES AND DISADVANTAGES, NOT YOUR THOUGHT PROCESS",
