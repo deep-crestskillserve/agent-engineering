@@ -1,6 +1,8 @@
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
-
+from crewai_tools import CodeInterpreterTool
+from crewai.agents.agent_builder.base_agent import BaseAgent
+from typing import List
 
 
 @CrewBase
@@ -19,13 +21,11 @@ class EngineeringTeam():
 
     @agent
     def backend_engineer(self) -> Agent:
+        code_tool = CodeInterpreterTool(unsafe_mode=True)
         return Agent(
             config=self.agents_config['backend_engineer'],
             verbose=True,
-            allow_code_execution=True,
-            code_execution_mode="safe",  # Uses Docker for safety
-            max_execution_time=500, 
-            max_retry_limit=3 
+            tools=[code_tool]
         )
     
     @agent
@@ -37,11 +37,11 @@ class EngineeringTeam():
     
     @agent
     def test_engineer(self) -> Agent:
+        code_tool = CodeInterpreterTool(unsafe_mode=True)
         return Agent(
             config=self.agents_config['test_engineer'],
             verbose=True,
-            allow_code_execution=True,
-            code_execution_mode="safe",  # Uses Docker for safety
+            tools=[code_tool],  
             max_execution_time=500, 
             max_retry_limit=3 
         )
